@@ -1,7 +1,7 @@
 let listaProductos = [];
 
 function agregarListener() {    
-    document.querySelector("#btn-entrada-producto").addEventListener('click', e => {
+    document.querySelector("#btn-entrada-producto").addEventListener('click', () => {
         let input = document.querySelector('#ingreso-producto');
         let producto = input.value;
 
@@ -19,19 +19,20 @@ function agregarListener() {
     });
 
 
-    document.querySelector('#btn-borrar-productos').addEventListener('click', e => {
+    document.querySelector('#btn-borrar-productos').addEventListener('click', () => {
         listaProductos = [];
         actualizarLista();
 
 
-    document.querySelector('#txt-busqueda').addEventListener('input', e=> {
+    document.querySelector('#txt-busqueda').addEventListener('input', e => {
         let nueva_lista = [];
+        console.log(e.target.value);
          listaProductos.forEach(val => {
              if(val.nombre.includes(e.target.value))
                 nueva_lista.push(val);
          })
          actualizarLista(nueva_lista);
-    })
+    });
 
     });
 }
@@ -71,7 +72,7 @@ function actualizarLista(nueva_lista = false) {
         <span class="mdl-list__item-primary-content w-20">
 
             <div class="mdl-textfield mdl-js-textfield">
-                <input class="mdl-textfield__input" type="text" id="sample-cant-${indice}" onchange="cambiarCantidad(${indice, this})">
+                <input class="mdl-textfield__input" type="text" id="sample-cant-${indice}" onchange="cambiarCantidad(${indice}, this)">
                 <label class="mdl-textfield__label" for="sample-cant-${indice}">${producto.cantidad}</label>
             </div>
             
@@ -79,7 +80,7 @@ function actualizarLista(nueva_lista = false) {
         <span class="mdl-list__item-primary-content w-20 ml-item">
 
             <div class="mdl-textfield mdl-js-textfield">
-                <input class="mdl-textfield__input" type="text" id="sample-precio-${indice}" onchange="cambiarPrecio(${indice, this})">
+                <input class="mdl-textfield__input" type="text" id="sample-precio-${indice}" onchange="cambiarPrecio(${indice}, this)">
                 <label class="mdl-textfield__label" for="sample-precio-${indice}">${producto.precio}</label>
             </div>
 
