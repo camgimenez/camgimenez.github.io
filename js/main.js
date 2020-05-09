@@ -101,13 +101,25 @@ function actualizarLista(nueva_lista = false) {
 
 }
 
+function registrarSW() {
+    // registrar el SW en el arcihvo JS ppal
+    if('serviceWorker'in navigator) {
+        navigator.serviceWorker.register('./serviceWorker.js')
+        .then(registracion => {
+            console.log('registrado correctamente', registracion);
+        })
+        .catch(error => console.log(error));
+    }
 
+}
 
 function inicio() {
     // 1. Agregar los listeners a los botones "entrada-producto" y "borrar producto"
     agregarListener();
    // 2. Actualizar/Dibujar la lista
     actualizarLista();
+    //3. Registrar el Service Worker
+    registrarSW();
  }
 
 
