@@ -1,128 +1,184 @@
-let listaProductos = [];
+const STORAGE_KEY = 'superListaProductos';
 
-function agregarListener() {    
-    document.querySelector("#btn-entrada-producto").addEventListener('click', () => {
-        let input = document.querySelector('#ingreso-producto');
-        let producto = input.value;
+let listaProductos = cargarDatos();
 
-        if (producto != '' ) {
-            listaProductos.push({
-                nombre: producto,
-                cantidad:1, 
-                precio:0
-            });
-            actualizarLista();
-
-
-        }
-        input.value = '';
-    });
-
-
-    document.querySelector('#btn-borrar-productos').addEventListener('click', () => {
-        listaProductos = [];
-        actualizarLista();
-
-
-    document.querySelector('#txt-busqueda').addEventListener('input', e => {
-        let nueva_lista = [];
-        console.log(e.target.value);
-         listaProductos.forEach(val => {
-             if(val.nombre.includes(e.target.value))
-                nueva_lista.push(val);
-         })
-         actualizarLista(nueva_lista);
-    });
-
-    });
+function cargarDatos() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
+    }
 }
 
+function guardarDatos() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(listaProductos));
+    } catch { /* storage full or unavailable */ }
+}
+
+function agregarProducto() {
+    const input = document.querySelector('#ingreso-producto');
+    const nombre = input.value.trim();
+
+    if (!nombre) return;
+
+    listaProductos.push({ nombre, cantidad: 1, precio: 0 });
+    guardarDatos();
+    actualizarLista();
+    input.value = '';
+    input.focus();
+}
+
+function agregarListener() {
+    document.querySelector('#btn-entrada-producto').addEventListener('click', agregarProducto);
+
+    document.querySelector('#ingreso-producto').addEventListener('keydown', e => {
+        if (e.key === 'Enter') agregarProducto();
+    });
+
+    document.querySelector('#btn-borrar-productos').addEventListener('click', () => {
+        if (listaProductos.length === 0) return;
+        listaProductos = [];
+        guardarDatos();
+        actualizarLista();
+    });
+
+    document.querySelector('#txt-busqueda').addEventListener('input', e => {
+        const termino = e.target.value.toLowerCase();
+        if (!termino) {
+            actualizarLista();
+            return;
+        }
+        const filtrada = listaProductos.filter(p =>
+            p.nombre.toLowerCase().includes(termino)
+        );
+        actualizarLista(filtrada);
+    });
+
+    const btnSearch = document.querySelector('#btn-search');
+    const searchContainer = document.querySelector('#search-container');
+    const searchInput = document.querySelector('#txt-busqueda');
+
+    btnSearch.addEventListener('click', () => {
+        searchContainer.classList.toggle('active');
+        if (searchContainer.classList.contains('active')) {
+            searchInput.focus();
+        } else {
+            searchInput.value = '';
+            actualizarLista();
+        }
+    });
+}
 
 function borrarProd(indice) {
     listaProductos.splice(indice, 1);
+    guardarDatos();
     actualizarLista();
-
 }
 
-function cambiarCantidad(indice, input) {
-    listaProductos[indice].cantidad = Number(input.value);
+function cambiarCantidad(indice, valor) {
+    const num = parseInt(valor, 10);
+    listaProductos[indice].cantidad = isNaN(num) || num < 1 ? 1 : num;
+    guardarDatos();
+    actualizarUI();
 }
 
-
-function cambiarPrecio(indice, input) {
-    listaProductos[indice].precio = Number(input.value);
+function cambiarPrecio(indice, valor) {
+    const num = parseFloat(valor);
+    listaProductos[indice].precio = isNaN(num) || num < 0 ? 0 : num;
+    guardarDatos();
+    actualizarUI();
 }
 
+function calcularTotal(lista) {
+    return lista.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+}
 
+function actualizarUI() {
+    const total = calcularTotal(listaProductos);
+    document.querySelector('#total-valor').textContent = '$' + total.toFixed(2);
 
-function actualizarLista(nueva_lista = false) {
-    let ul = document.querySelector('#ul-lista');
+    const count = listaProductos.reduce((sum, p) => sum + p.cantidad, 0);
+    const tipos = listaProductos.length;
+    document.querySelector('#total-items-count').textContent =
+        `${tipos} producto${tipos !== 1 ? 's' : ''} · ${count} unidad${count !== 1 ? 'es' : ''}`;
+
+    document.querySelectorAll('.subtotal-cell').forEach(cell => {
+        const idx = parseInt(cell.dataset.index, 10);
+        const p = listaProductos[idx];
+        if (p) cell.textContent = '$' + (p.cantidad * p.precio).toFixed(2);
+    });
+}
+
+function actualizarLista(listaFiltrada) {
+    const ul = document.querySelector('#ul-lista');
+    const lista = listaFiltrada || listaProductos;
+
     ul.innerHTML = '';
 
-    lista = nueva_lista == false ? listaProductos : nueva_lista;
+    lista.forEach((producto, indice) => {
+        const realIndex = listaFiltrada
+            ? listaProductos.indexOf(producto)
+            : indice;
 
-    lista.forEach(function(producto, indice) {
-        ul.innerHTML += `<li class="mdl-list__item">
-        <span class="mdl-list__item-primary-content w-10">
-            <i class="material-icons">shopping_cart</i>
-        </span>
-        <span class="mdl-list__item-primary-content w-30">
-            ${producto.nombre}
-        </span>
-        <span class="mdl-list__item-primary-content w-20">
-
-            <div class="mdl-textfield mdl-js-textfield">
-                <input class="mdl-textfield__input" type="text" id="sample-cant-${indice}" onchange="cambiarCantidad(${indice}, this)">
-                <label class="mdl-textfield__label" for="sample-cant-${indice}">${producto.cantidad}</label>
-            </div>
-            
-        </span>
-        <span class="mdl-list__item-primary-content w-20 ml-item">
-
-            <div class="mdl-textfield mdl-js-textfield">
-                <input class="mdl-textfield__input" type="text" id="sample-precio-${indice}" onchange="cambiarPrecio(${indice}, this)">
-                <label class="mdl-textfield__label" for="sample-precio-${indice}">${producto.precio}</label>
-            </div>
-
-        </span>                        
-        <span class="mdl-list__item-primary-content w-20 ml-item">
-            <!-- Colored FAB button with ripple -->
-            <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" onclick="borrarProd(${indice})">
-                <i class="material-icons">remove_shopping_cart</i>
-            </button>
-        </span>
-
-    </li>`
-  
-    // Es propio de Material Design
-    // componentHandler.upgradeElements(document.querySelector('#main'));
-     componentHandler.upgradeElements(ul);
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.innerHTML = `
+            <span class="col-icon">
+                <i class="material-icons">local_offer</i>
+            </span>
+            <span class="col-name">${escapeHTML(producto.nombre)}</span>
+            <span class="col-qty">
+                <input type="number" class="mini-input" value="${producto.cantidad}"
+                    min="1" aria-label="Cantidad"
+                    onchange="cambiarCantidad(${realIndex}, this.value)">
+            </span>
+            <span class="col-price">
+                <input type="number" class="mini-input" value="${producto.precio}"
+                    min="0" step="0.01" aria-label="Precio"
+                    onchange="cambiarPrecio(${realIndex}, this.value)">
+            </span>
+            <span class="col-subtotal subtotal-cell" data-index="${realIndex}">
+                $${(producto.cantidad * producto.precio).toFixed(2)}
+            </span>
+            <span class="col-action">
+                <button class="btn-delete" onclick="borrarProd(${realIndex})" aria-label="Eliminar">
+                    <i class="material-icons">close</i>
+                </button>
+            </span>`;
+        ul.appendChild(li);
     });
 
+    const hayItems = listaProductos.length > 0;
+    const hayResultados = lista.length > 0;
+
+    document.querySelector('#empty-state').classList.toggle('visible', !hayItems);
+    document.querySelector('#list-header').classList.toggle('visible', hayResultados);
+    document.querySelector('#total-section').classList.toggle('visible', hayItems);
+    document.querySelector('#actions-bar').classList.toggle('visible', hayItems);
+
+    actualizarUI();
+}
+
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 function registrarSW() {
-    // registrar el SW en el arcihvo JS ppal
-    if('serviceWorker'in navigator) {
+    if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./serviceWorker.js')
-        .then(registracion => {
-            console.log('registrado correctamente', registracion);
-        })
-        .catch(error => console.log(error));
+            .then(reg => console.log('SW registrado', reg.scope))
+            .catch(err => console.warn('SW error:', err));
     }
-
 }
 
 function inicio() {
-    // 1. Agregar los listeners a los botones "entrada-producto" y "borrar producto"
     agregarListener();
-   // 2. Actualizar/Dibujar la lista
     actualizarLista();
-    //3. Registrar el Service Worker
     registrarSW();
- }
-
-
-
+}
 
 document.addEventListener('DOMContentLoaded', inicio);
