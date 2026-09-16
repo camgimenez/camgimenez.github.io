@@ -36,7 +36,155 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: contain;
 }
+
+/* --- Offline indicator --- */
+
+.offline-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #424242;
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.offline-indicator.visible {
+    display: flex;
+}
+
+.offline-indicator .material-icons {
+    font-size: 16px;
+}
+
+/* --- Install & Update banners --- */
+
+.app-banner {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    box-shadow: var(--shadow-sm);
+    animation: bannerSlide 0.3s ease-out;
+}
+
+.app-banner.visible {
+    display: block;
+}
+
+.update-banner {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border-bottom-color: #c8e6c9;
+}
+
+@keyframes bannerSlide {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.banner-content {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.banner-text {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.banner-icon {
+    font-size: 28px;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.update-banner .banner-icon {
+    color: var(--accent-dark);
+}
+
+.banner-text div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.banner-text strong {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.banner-text span {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.banner-btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition), transform var(--transition);
+}
+
+.banner-btn.primary {
+    background: var(--primary);
+    color: white;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.update-banner .banner-btn.primary {
+    background: var(--accent-dark);
+}
+
+.banner-btn.primary:hover {
+    filter: brightness(1.15);
+    transform: scale(1.02);
+}
+
+.banner-btn.primary:active {
+    transform: scale(0.98);
+}
+
+.banner-btn.dismiss {
+    background: none;
+    color: var(--text-hint);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+}
+
+.banner-btn.dismiss:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+}
+
+.banner-btn.dismiss .material-icons {
+    font-size: 20px;
+}
+
+/* --- Header --- */
 
 header {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -120,6 +268,8 @@ header h1 {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* --- Main content --- */
+
 main {
     max-width: 700px;
     margin: 0 auto;
@@ -194,6 +344,8 @@ main {
 .fab-btn .material-icons {
     font-size: 24px;
 }
+
+/* --- List --- */
 
 .list-header {
     display: none;
@@ -338,6 +490,8 @@ main {
     font-size: 20px;
 }
 
+/* --- Empty state --- */
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -365,6 +519,8 @@ main {
 .empty-state span {
     font-size: 0.85rem;
 }
+
+/* --- Total section --- */
 
 .total-section {
     display: none;
@@ -403,6 +559,8 @@ main {
     font-size: 0.8rem;
     color: var(--text-hint);
 }
+
+/* --- Actions bar --- */
 
 .actions-bar {
     display: none;
@@ -446,6 +604,8 @@ main {
     font-size: 20px;
 }
 
+/* --- Responsive --- */
+
 @media (max-width: 480px) {
     .col-subtotal {
         display: none;
@@ -475,5 +635,17 @@ main {
 
     .total-value {
         font-size: 1.3rem;
+    }
+
+    .banner-text span {
+        display: none;
+    }
+}
+
+/* --- Standalone (installed PWA) tweaks --- */
+
+@media (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
     }
 }

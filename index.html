@@ -8,6 +8,7 @@
     <meta name="description" content="Super Lista - Tu lista de compras inteligente">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SuperLista">
     <title>Super Lista</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
@@ -18,6 +19,50 @@
 </head>
 
 <body>
+
+    <!-- Offline indicator -->
+    <div class="offline-indicator" id="offline-indicator">
+        <i class="material-icons">wifi_off</i>
+        <span>Sin conexion - Modo offline</span>
+    </div>
+
+    <!-- Install banner -->
+    <div class="app-banner" id="install-banner">
+        <div class="banner-content">
+            <div class="banner-text">
+                <i class="material-icons banner-icon">get_app</i>
+                <div>
+                    <strong>Instalar Super Lista</strong>
+                    <span>Accede rapido desde tu pantalla de inicio</span>
+                </div>
+            </div>
+            <div class="banner-actions">
+                <button id="btn-instalar" class="banner-btn primary">Instalar</button>
+                <button id="btn-cerrar-instalar" class="banner-btn dismiss" aria-label="Cerrar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update banner -->
+    <div class="app-banner update-banner" id="update-banner">
+        <div class="banner-content">
+            <div class="banner-text">
+                <i class="material-icons banner-icon">system_update</i>
+                <div>
+                    <strong>Nueva version disponible</strong>
+                    <span>Actualiza para obtener las mejoras</span>
+                </div>
+            </div>
+            <div class="banner-actions">
+                <button id="btn-actualizar" class="banner-btn primary">Actualizar</button>
+                <button id="btn-cerrar-update" class="banner-btn dismiss" aria-label="Cerrar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <header>
         <div class="header-content">
