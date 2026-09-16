@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'superListaProductos';
 
 let listaProductos = cargarDatos();
+let deferredInstallPrompt = null;
 
 function cargarDatos() {
     try {
@@ -68,6 +69,23 @@ function agregarListener() {
             searchInput.value = '';
             actualizarLista();
         }
+    });
+
+    document.querySelector('#btn-instalar').addEventListener('click', instalarApp);
+
+    document.querySelector('#btn-cerrar-instalar').addEventListener('click', () => {
+        document.querySelector('#install-banner').classList.remove('visible');
+    });
+
+    document.querySelector('#btn-actualizar').addEventListener('click', () => {
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage('skipWaiting');
+        }
+        location.reload();
+    });
+
+    document.querySelector('#btn-cerrar-update').addEventListener('click', () => {
+        document.querySelector('#update-banner').classList.remove('visible');
     });
 }
 
@@ -167,17 +185,75 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
-function registrarSW() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./serviceWorker.js')
-            .then(reg => console.log('SW registrado', reg.scope))
-            .catch(err => console.warn('SW error:', err));
-    }
+// --- PWA: Install prompt ---
+
+function configurarInstalacion() {
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        document.querySelector('#install-banner').classList.add('visible');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        document.querySelector('#install-banner').classList.remove('visible');
+    });
 }
+
+async function instalarApp() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const result = await deferredInstallPrompt.userChoice;
+    if (result.outcome === 'accepted') {
+        document.querySelector('#install-banner').classList.remove('visible');
+    }
+    deferredInstallPrompt = null;
+}
+
+// --- PWA: Online/Offline status ---
+
+function configurarEstadoRed() {
+    const indicator = document.querySelector('#offline-indicator');
+
+    function actualizarEstado() {
+        indicator.classList.toggle('visible', !navigator.onLine);
+    }
+
+    window.addEventListener('online', actualizarEstado);
+    window.addEventListener('offline', actualizarEstado);
+    actualizarEstado();
+}
+
+// --- PWA: Service Worker registration + update detection ---
+
+function registrarSW() {
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.register('./serviceWorker.js')
+        .then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        document.querySelector('#update-banner').classList.add('visible');
+                    }
+                });
+            });
+        })
+        .catch(err => console.warn('SW error:', err));
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        location.reload();
+    });
+}
+
+// --- Init ---
 
 function inicio() {
     agregarListener();
     actualizarLista();
+    configurarInstalacion();
+    configurarEstadoRed();
     registrarSW();
 }
 
