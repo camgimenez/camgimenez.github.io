@@ -4,88 +4,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#6200ea">
+    <meta name="description" content="Super Lista - Tu lista de compras inteligente">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Super Lista</title>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-
     <link rel="stylesheet" href="css/estilos.css">
     <link rel="manifest" href="manifest.json">
-
+    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
 </head>
 
 <body>
- 
-    <!-- Always shows a header, even in smaller screens. -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-        <header class="mdl-layout__header">
-            <div class="mdl-layout__header-row">
-                <!-- Title -->
-                <span class="mdl-layout-title">Super Lista Productos</span>
-                <!-- Add spacer, to align navigation to the right -->
-                <div class="mdl-layout-spacer"></div>
-                <!-- Navigation. We hide it in small screens. -->
-                <nav class="mdl-navigation mdl-layout--large-screen-only">
-                    <!-- <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a>
-                    <a class="mdl-navigation__link" href="">Link</a> -->
-                </nav>
-                  <!-- Expandable Textfield -->
-                    <form action="#">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-                            <label class="mdl-button mdl-js-button mdl-button--icon" for="txt-busqueda">
-                                <i class="material-icons">search</i>
-                            </label>
-                            <div class="mdl-textfield__expandable-holder">
-                                <input class="mdl-textfield__input" type="text" id="txt-busqueda">
-                                <label class="mdl-textfield__label" for="sample-expandable">Expandable Input</label>
-                            </div>
-                        </div>
-                    </form>
 
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <i class="material-icons header-icon">shopping_cart</i>
+                <h1>Super Lista</h1>
             </div>
-        </header>
-        <div class="mdl-layout__drawer">
-            <span class="mdl-layout-title">Servicios</span>
-            <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="#">Servicio 1</a>
-                <a class="mdl-navigation__link" href="#">Servicio 2</a>
-                <a class="mdl-navigation__link" href="#">Servicio 3</a>
-                <a class="mdl-navigation__link" href="#">Servicio 4</a>
-            </nav>
+            <div class="header-search" id="search-container">
+                <button class="icon-btn" id="btn-search" aria-label="Buscar">
+                    <i class="material-icons">search</i>
+                </button>
+                <input type="text" id="txt-busqueda" placeholder="Buscar producto..." autocomplete="off">
+            </div>
         </div>
-        <main class="mdl-layout__content">
-            <div class="page-content">
-                <div class="contenedor">
-                    <div class="mdl-textfield mdl-js-textfield w-40">
-                        <input class="mdl-textfield__input" type="text" id="ingreso-producto">
-                        <label class="mdl-textfield__label" for="ingreso-producto">Ingrese un producto...</label>
-                    </div>
-                    <div class="w-30 ml-item">
-                        <button id="btn-entrada-producto"
-                            class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add_shopping_cart</i>
-                        </button>
-                    </div>
-                    <div class="w-30">
-                        <button id="btn-borrar-productos"
-                            class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
-                            Borrar Todo
-                        </button>
-                    </div>
+    </header>
 
+    <main>
+        <section class="input-section">
+            <div class="input-row">
+                <div class="input-field">
+                    <input type="text" id="ingreso-producto" placeholder="Agregar producto..." autocomplete="off">
                 </div>
-
-                <!-- Your content goes here -->
-                <div id="lista">
-                    <ul id="ul-lista"></ul>
-                </div>
+                <button id="btn-entrada-producto" class="fab-btn" aria-label="Agregar producto">
+                    <i class="material-icons">add</i>
+                </button>
             </div>
-        </main>
-    </div>
+        </section>
+
+        <section class="list-header" id="list-header">
+            <div class="list-header-row">
+                <span class="col-icon"></span>
+                <span class="col-name">Producto</span>
+                <span class="col-qty">Cant.</span>
+                <span class="col-price">Precio</span>
+                <span class="col-subtotal">Subtotal</span>
+                <span class="col-action"></span>
+            </div>
+        </section>
+
+        <section id="lista">
+            <ul id="ul-lista"></ul>
+        </section>
+
+        <section class="empty-state" id="empty-state">
+            <i class="material-icons">receipt_long</i>
+            <p>Tu lista esta vacia</p>
+            <span>Agrega productos para comenzar</span>
+        </section>
+
+        <section class="total-section" id="total-section">
+            <div class="total-row">
+                <span class="total-label">Total estimado</span>
+                <span class="total-value" id="total-valor">$0.00</span>
+            </div>
+            <div class="total-items">
+                <span id="total-items-count">0 productos</span>
+            </div>
+        </section>
+
+        <div class="actions-bar" id="actions-bar">
+            <button id="btn-borrar-productos" class="btn-clear">
+                <i class="material-icons">delete_sweep</i>
+                Borrar Todo
+            </button>
+        </div>
+    </main>
 
     <script src="js/main.js"></script>
 
